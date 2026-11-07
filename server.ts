@@ -63,6 +63,16 @@ app.get("/sw.js", (req, res) => {
   res.status(404).send("// Service worker non trovato");
 });
 
+// Privacy Policy endpoint for Google Play compliance
+app.get(["/privacy", "/privacy.html"], (req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  const privacyPath = path.join(process.cwd(), "public", "privacy.html");
+  if (fs.existsSync(privacyPath)) {
+    return res.sendFile(privacyPath);
+  }
+  res.status(404).send("<h1>Privacy policy non trovata</h1>");
+});
+
 // --- API ENDPOINTS ---
 
 // 1. Get all suppliers (Anagrafica Fornitori)

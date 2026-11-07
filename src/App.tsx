@@ -701,8 +701,19 @@ export default function App() {
             <Layers size={14} className="text-blue-600" />
             <span className="font-bold text-slate-700 uppercase tracking-widest text-[10px]">HACCP Smart-Track © 2026</span>
           </div>
-          <div className="flex items-center gap-1 text-slate-400">
-            Fatto con passione per l'eccellenza alimentare <Heart size={11} className="text-red-500 fill-red-500" />
+          <div className="flex items-center gap-4 text-slate-400 text-[11px]">
+            <a 
+              href="/privacy.html" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-slate-500 hover:text-blue-600 underline font-semibold transition-colors"
+            >
+              Informativa sulla Privacy
+            </a>
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              Fatto per l'eccellenza alimentare <Heart size={11} className="text-red-500 fill-red-500" />
+            </span>
           </div>
         </div>
       </footer>

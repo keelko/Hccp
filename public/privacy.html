@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informativa sulla Privacy - HACCP Smart-Track</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --text: #1e293b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background-color: var(--bg);
+      margin: 0;
+      padding: 0;
+    }
+    .header {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom: 4px solid var(--primary);
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+    .header p {
+      margin: 0;
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      color: #0f172a;
+      font-size: 20px;
+      margin-top: 28px;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 6px;
+    }
+    h2:first-of-type {
+      margin-top: 0;
+    }
+    p, li {
+      font-size: 15px;
+      color: #334155;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #64748b;
+      font-size: 13px;
+      padding-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge">Conformità Regolamento UE 2016/679 (GDPR) e Google Play Policy</div>
+    <h1>Informativa sulla Privacy</h1>
+    <p>Applicazione: <strong>HACCP Smart-Track (Tracciabilità Laboratorio Alimentare)</strong></p>
+    <p>Ultimo aggiornamento: 7 Novembre 2026</p>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <h2>1. Titolare del Trattamento dei Dati</h2>
+      <p>Il Titolare del trattamento dei dati per l'applicazione <strong>HACCP Smart-Track</strong> è lo sviluppatore e gestore dell'applicazione. Per qualsiasi richiesta o esercizio dei diritti di protezione dei dati, è possibile contattare l'indirizzo email: <a href="mailto:downloandroid@gmail.com">downloandroid@gmail.com</a>.</p>
+
+      <h2>2. Tipologia di Dati Trattati e Permessi Dispositivo</h2>
+      <p>L'applicazione è progettata per la gestione interna della rintracciabilità alimentare, scadenze e magazzino conformemente ai regolamenti HACCP (Reg. CE 178/2002 e 852/2004). Nello specifico:</p>
+      <ul>
+        <li><strong>Fotocamera e Immagini Documenti (Permesso Fotocamera):</strong> L'applicazione richiede l'accesso alla fotocamera o alla memoria del dispositivo unicamente per consentire all'utente di scattare fotografie o selezionare immagini di Documenti di Trasporto (DDT) e fatture commerciali di fornitura alimentare.</li>
+        <li><strong>Dati di Riconoscimento OCR:</strong> Le fotografie dei documenti contengono dati relativi a merci, lotti di produzione, quantità, date di scadenza e dati identificativi fiscali dei fornitori (Ragione Sociale, P.IVA). Nessun dato personale sensibile dell'utente o dei clienti finali viene raccolto o richiesto.</li>
+        <li><strong>Dati Tecnici di Navigazione:</strong> Indirizzo IP o log tecnici strettamente necessari al corretto funzionamento della sessione applicativa e alla sicurezza dell'infrastruttura.</li>
+      </ul>
+
+      <h2>3. Finalità del Trattamento</h2>
+      <p>I dati forniti dall'utente e le immagini dei documenti vengono trattati esclusivamente per le seguenti finalità:</p>
+      <ul>
+        <li>Esecuzione dell'estrazione ottica automatizzata (OCR) dei dati dei lotti e delle merci per la compilazione rapida delle schede di magazzino;</li>
+        <li>Archiviazione e consultazione dello storico di tracciabilità delle materie prime e delle lavorazioni alimentari;</li>
+        <li>Generazione di report e registri di autocontrollo conformi alla normativa HACCP per le verifiche ispettive.</li>
+      </ul>
+
+      <h2>4. Terze Parti e Trattamento dei Dati</h2>
+      <p>Per la funzione di estrazione intelligente dei dati dalle immagini dei documenti di trasporto (OCR), l'applicazione si avvale delle API di <strong>Google Gemini (Google Cloud AI)</strong> fornite da Google LLC. Le immagini inviate per l'estrazione contengono esclusivamente documenti fiscali e di trasporto di merci alimentari e non vengono utilizzate per scopi pubblicitari o di profilazione comportamentale.</p>
+      <p>L'applicazione <strong>non include</strong> librerie pubblicitarie di terze parti, banner o tracciatori pubblicitari.</p>
+
+      <h2>5. Conservazione e Sicurezza dei Dati</h2>
+      <p>I dati caricati dall'utente (anagrafica fornitori, lotti, documenti salvati) sono memorizzati in modo sicuro sul database dell'applicazione con protocolli di comunicazione crittografati HTTPS/SSL. I dati non vengono ceduti a terzi né commercializzati.</p>
+
+      <h2>6. Diritti dell'Interessato (GDPR)</h2>
+      <p>In conformità agli articoli 15-22 del Regolamento UE 2016/679 (GDPR), l'utente ha il diritto di:</p>
+      <ul>
+        <li>Chiedere l'accesso, la rettifica o la cancellazione totale dei dati archiviati nell'applicazione;</li>
+        <li>Richiedere la limitazione del trattamento o opporsi al trattamento;</li>
+        <li>Richiedere l'esportazione dei propri registri e dati di magazzino.</li>
+      </ul>
+      <p>Per esercitare tali diritti, è sufficiente inviare una comunicazione scritta a: <a href="mailto:downloandroid@gmail.com">downloandroid@gmail.com</a>.</p>
+
+      <h2>7. Modifiche alla presente Informativa</h2>
+      <p>Ci riserviamo il diritto di aggiornare o modificare la presente informativa sulla privacy per adeguarla a future innovazioni tecniche o aggiornamenti normativi. Ogni modifica sarà resa disponibile su questa pagina con l'indicazione della data di revisione.</p>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2026 HACCP Smart-Track • Tutti i diritti riservati • <a href="mailto:downloandroid@gmail.com" style="color: #2563eb; text-decoration: none;">downloandroid@gmail.com</a></p>
+    </div>
+  </div>
+
+</body>
+</html>
