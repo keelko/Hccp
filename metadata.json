@@ -1,0 +1,10 @@
+{
+  "name": "Remix: Tracciabilità Laboratorio Alimentare",
+  "description": "Sistema intelligente di tracciabilità alimentare con OCR AI per lotti, scadenze HACCP e gestione magazzino da foto di DDT e fatture.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

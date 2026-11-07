@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.haccp.smarttrack",
+      "sha256_cert_fingerprints": [
+        "INSERISCI_QUI_LO_SHA256_DEL_TUO_KEYSTORE_O_DI_GOOGLE_PLAY_APP_SIGNING"
+      ]
+    }
+  }
+]

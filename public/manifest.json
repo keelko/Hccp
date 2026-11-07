@@ -1,0 +1,76 @@
+{
+  "id": "/",
+  "name": "Tracciabilità Laboratorio Alimentare HACCP",
+  "short_name": "HACCP Track",
+  "description": "Sistema intelligente di tracciabilità alimentare con OCR AI per lotti, scadenze HACCP e gestione magazzino da foto di DDT e fatture.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "lang": "it",
+  "dir": "ltr",
+  "categories": ["business", "food", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/mobile-screen.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Schermata Mobile HACCP Smart-Track"
+    },
+    {
+      "src": "/screenshots/desktop-screen.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard Magazzino e Tracciabilità Lotti"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Scansiona DDT",
+      "short_name": "Scansione",
+      "description": "Scansiona un nuovo DDT o Fattura con AI",
+      "url": "/#scan",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tracciabilità Lotti",
+      "short_name": "Lotti",
+      "description": "Consulta lo storico dei lotti e ingredienti",
+      "url": "/#lots",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Report HACCP",
+      "short_name": "Report",
+      "description": "Genera e stampa il registro di conformità HACCP",
+      "url": "/#reports",
+      "icons": [{ "src": "/pwa-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}
