@@ -199,21 +199,25 @@ export default function App() {
       });
 
       if (!res.ok) {
-        let errMsg = "Errore durante la scansione del documento.";
+        let errMsg = `Errore HTTP ${res.status} durante la scansione del documento.`;
         if (res.status === 404) {
-          errMsg = "Endpoint /api/scan non trovato (404). Il backend server non risulta raggiungibile sul tuo hosting. Verifica che il backend Node.js sia attivo e configurato.";
+          errMsg = "Endpoint /api/scan non trovato (404). Il backend server non risulta raggiungibile sul tuo hosting.";
         } else {
           try {
-            const errData = await res.json();
-            if (errData && errData.error) {
-              errMsg = errData.error;
+            const rawText = await res.text();
+            if (rawText) {
+              try {
+                const errData = JSON.parse(rawText);
+                if (errData && errData.error) {
+                  errMsg = errData.error;
+                } else {
+                  errMsg = `${errMsg} (${rawText.slice(0, 200)})`;
+                }
+              } catch {
+                errMsg = `${errMsg} — ${rawText.slice(0, 220)}`;
+              }
             }
-          } catch (_) {
-            try {
-              const text = await res.text();
-              if (text && text.length < 300) errMsg = text;
-            } catch {}
-          }
+          } catch {}
         }
         throw new Error(errMsg);
       }

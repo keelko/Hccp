@@ -8,7 +8,6 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import os from "os";
-import { createServer as createViteServer } from "vite";
 import { db } from "./src/server/db.js";
 import { GoogleGenAI, Type } from "@google/genai";
 
@@ -94,6 +93,20 @@ app.get(["/privacy", "/privacy.html"], (req, res) => {
 });
 
 // --- API ENDPOINTS ---
+
+// Health check endpoint for diagnostics (e.g. Vercel / Render)
+app.get(["/api", "/api/health"], (req, res) => {
+  const hasGeminiKey = Boolean(
+    process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== "MY_GEMINI_API_KEY"
+  );
+  res.json({
+    ok: true,
+    runtime: isServerless ? "serverless" : "node",
+    hasGeminiKey,
+    hasDatabaseUrl: Boolean(process.env.DATABASE_URL || process.env.POSTGRES_URL),
+    timestamp: new Date().toISOString(),
+  });
+});
 
 // 1. Get all suppliers (Anagrafica Fornitori)
 app.get("/api/suppliers", (req, res) => {
@@ -823,6 +836,7 @@ async function startServer() {
   const isDev = process.env.NODE_ENV !== "production" || (process.argv[1] && !process.argv[1].endsWith("server.cjs"));
 
   if (isDev) {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

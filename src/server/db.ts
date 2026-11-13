@@ -184,21 +184,26 @@ Riesegui il deploy o riavvia il server su Render per applicare questa modifica, 
   }
 
   private initLocal() {
-    if (!fs.existsSync(DB_DIR)) {
-      fs.mkdirSync(DB_DIR, { recursive: true });
-    }
-    if (!fs.existsSync(DB_FILE)) {
-      fs.writeFileSync(DB_FILE, JSON.stringify(DEFAULT_DB, null, 2), "utf8");
-      this.cache = JSON.parse(JSON.stringify(DEFAULT_DB));
-    } else {
-      try {
-        const data = fs.readFileSync(DB_FILE, "utf8");
-        this.cache = JSON.parse(data);
-      } catch (e) {
-        console.error("Error reading database, resetting to default:", e);
+    try {
+      if (!fs.existsSync(DB_DIR)) {
+        fs.mkdirSync(DB_DIR, { recursive: true });
+      }
+      if (!fs.existsSync(DB_FILE)) {
         fs.writeFileSync(DB_FILE, JSON.stringify(DEFAULT_DB, null, 2), "utf8");
         this.cache = JSON.parse(JSON.stringify(DEFAULT_DB));
+      } else {
+        try {
+          const data = fs.readFileSync(DB_FILE, "utf8");
+          this.cache = JSON.parse(data);
+        } catch (e) {
+          console.error("Error reading database, resetting to default:", e);
+          fs.writeFileSync(DB_FILE, JSON.stringify(DEFAULT_DB, null, 2), "utf8");
+          this.cache = JSON.parse(JSON.stringify(DEFAULT_DB));
+        }
       }
+    } catch (fsErr) {
+      console.warn("Filesystem locale non scrivibile, uso memoria RAM temporanea:", fsErr);
+      this.cache = JSON.parse(JSON.stringify(DEFAULT_DB));
     }
   }
 
