@@ -7,6 +7,7 @@ import "dotenv/config";
 import express from "express";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import { createServer as createViteServer } from "vite";
 import { db } from "./src/server/db.js";
 import { GoogleGenAI, Type } from "@google/genai";
@@ -19,12 +20,31 @@ const PORT = 3000;
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Setup directory for uploaded/scanned documents
-const uploadDir = path.join(process.cwd(), "uploads");
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Setup directory for uploaded/scanned documents (supports Vercel and serverless /tmp)
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME || !!process.env.NETLIFY;
+const uploadDir = isServerless ? path.join(os.tmpdir(), "uploads") : path.join(process.cwd(), "uploads");
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  console.warn("Impossibile creare cartella uploads locale:", e);
 }
 app.use("/uploads", express.static(uploadDir));
+
+// Lazy DB initialization for serverless environments (Vercel)
+let isDbReady = false;
+app.use(async (req, res, next) => {
+  if (!isDbReady) {
+    try {
+      await db.initialize();
+      isDbReady = true;
+    } catch (e) {
+      console.warn("Database initialization warning:", e);
+    }
+  }
+  next();
+});
 
 // Android Digital Asset Links (Required by Google Play for TWA full-screen verification)
 app.get("/.well-known/assetlinks.json", (req, res) => {
@@ -502,8 +522,13 @@ app.post("/api/scan", async (req, res) => {
     const filename = `${timestamp}_documento.png`;
     const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, "");
     
-    fs.writeFileSync(path.join(uploadDir, filename), cleanBase64, { encoding: "base64" });
-    const imageUrl = `/uploads/${filename}`;
+    let imageUrl = image.startsWith("data:") ? image : `data:${mimeType || "image/png"};base64,${cleanBase64}`;
+    try {
+      fs.writeFileSync(path.join(uploadDir, filename), cleanBase64, { encoding: "base64" });
+      imageUrl = `/uploads/${filename}`;
+    } catch (fsErr) {
+      console.warn("Filesystem read-only (es. Vercel). Utilizzo immagine inline in memoria:", fsErr);
+    }
 
     let parsedData: any = null;
     let providerUsed = "gemini";
@@ -816,4 +841,11 @@ async function startServer() {
   });
 }
 
-startServer();
+// In standard environments (Node / Docker / Render), launch server.
+// In Vercel serverless functions, export the Express app directly.
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export { app };
+export default app;

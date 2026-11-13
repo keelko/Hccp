@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/((?!api/|assets/|uploads/|screenshots/|\\.well-known/|manifest\\.json|manifest\\.webmanifest|sw\\.js|privacy\\.html).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

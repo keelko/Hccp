@@ -23,7 +23,10 @@ import {
   ScannedDocument
 } from "../types.js";
 
-const DB_DIR = path.join(process.cwd(), "data");
+import os from "os";
+
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME || !!process.env.NETLIFY;
+const DB_DIR = isServerless ? path.join(os.tmpdir(), "data") : path.join(process.cwd(), "data");
 const DB_FILE = path.join(DB_DIR, "db.json");
 
 interface DatabaseSchema {

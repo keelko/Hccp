@@ -200,12 +200,21 @@ export default function App() {
 
       if (!res.ok) {
         let errMsg = "Errore durante la scansione del documento.";
-        try {
-          const errData = await res.json();
-          if (errData && errData.error) {
-            errMsg = errData.error;
+        if (res.status === 404) {
+          errMsg = "Endpoint /api/scan non trovato (404). Il backend server non risulta raggiungibile sul tuo hosting. Verifica che il backend Node.js sia attivo e configurato.";
+        } else {
+          try {
+            const errData = await res.json();
+            if (errData && errData.error) {
+              errMsg = errData.error;
+            }
+          } catch (_) {
+            try {
+              const text = await res.text();
+              if (text && text.length < 300) errMsg = text;
+            } catch {}
           }
-        } catch (_) {}
+        }
         throw new Error(errMsg);
       }
 
