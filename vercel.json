@@ -4,6 +4,14 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api",
+      "destination": "/api/index?__path=/"
+    },
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/index?__path=/$1"
+    },
+    {
       "source": "/((?!api/|assets/|uploads/|screenshots/|\\.well-known/|manifest\\.json|manifest\\.webmanifest|sw\\.js|privacy\\.html).*)",
       "destination": "/index.html"
     }

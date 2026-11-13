@@ -356,7 +356,21 @@ export default function App() {
       });
 
       if (!res.ok) {
-        throw new Error("Impossibile salvare il documento nel magazzino.");
+        let errMsg = `Impossibile salvare il documento nel magazzino (HTTP ${res.status}).`;
+        try {
+          const rawText = await res.text();
+          if (rawText) {
+            try {
+              const errData = JSON.parse(rawText);
+              if (errData?.error) {
+                errMsg = `${errMsg} ${errData.error}`;
+              }
+            } catch {
+              errMsg = `${errMsg} ${rawText.slice(0, 150)}`;
+            }
+          }
+        } catch {}
+        throw new Error(errMsg);
       }
 
       alert("DDT/Fattura salvata! Lotti e scorte aggiornati con successo.");

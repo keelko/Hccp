@@ -33,12 +33,17 @@ app.use("/uploads", express.static(uploadDir));
 
 // Lazy DB initialization for serverless environments (Vercel)
 let isDbReady = false;
+let dbInitPromise: Promise<void> | null = null;
 app.use(async (req, res, next) => {
   if (!isDbReady) {
     try {
-      await db.initialize();
+      if (!dbInitPromise) {
+        dbInitPromise = db.initialize();
+      }
+      await dbInitPromise;
       isDbReady = true;
     } catch (e) {
+      dbInitPromise = null;
       console.warn("Database initialization warning:", e);
     }
   }
@@ -139,7 +144,7 @@ app.get("/api/stock", (req, res) => {
 });
 
 // Create a new raw material/ingredient
-app.post("/api/ingredients", (req, res) => {
+app.post("/api/ingredients", async (req, res) => {
   try {
     const { nome_generico, unita_misura, categoria, scorta_minima } = req.body;
     if (!nome_generico || !unita_misura) {
@@ -151,6 +156,7 @@ app.post("/api/ingredients", (req, res) => {
       categoria: categoria || "In classificazione",
       scorta_minima: Number(scorta_minima || 0)
     });
+    await db.flush();
     res.json(newIng);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -232,7 +238,7 @@ app.post("/api/documents/approve", async (req, res) => {
 });
 
 // 6. Manual Discharge of a lot
-app.post("/api/lots/:id/discharge", (req, res) => {
+app.post("/api/lots/:id/discharge", async (req, res) => {
   try {
     const lotId = req.params.id;
     const { quantita } = req.body;
@@ -242,6 +248,7 @@ app.post("/api/lots/:id/discharge", (req, res) => {
     }
 
     const updatedLot = db.dischargeLot(lotId, Number(quantita));
+    await db.flush();
     res.json({ success: true, lot: updatedLot });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -249,7 +256,7 @@ app.post("/api/lots/:id/discharge", (req, res) => {
 });
 
 // Update an existing lot
-app.put("/api/lots/:id", (req, res) => {
+app.put("/api/lots/:id", async (req, res) => {
   try {
     const lotId = req.params.id;
     const { numero_lotto, quantita_caricata, quantita_rimanente, prezzo_unitario, data_scadenza } = req.body;
@@ -260,6 +267,7 @@ app.put("/api/lots/:id", (req, res) => {
       prezzo_unitario,
       data_scadenza
     });
+    await db.flush();
     res.json({ success: true, lot: updated });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -267,10 +275,11 @@ app.put("/api/lots/:id", (req, res) => {
 });
 
 // Delete an existing lot
-app.delete("/api/lots/:id", (req, res) => {
+app.delete("/api/lots/:id", async (req, res) => {
   try {
     const lotId = req.params.id;
     db.deleteLot(lotId);
+    await db.flush();
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -278,7 +287,7 @@ app.delete("/api/lots/:id", (req, res) => {
 });
 
 // Update a raw material / ingredient
-app.put("/api/ingredients/:id", (req, res) => {
+app.put("/api/ingredients/:id", async (req, res) => {
   try {
     const ingId = req.params.id;
     const { nome_generico, unita_misura, categoria, scorta_minima } = req.body;
@@ -288,6 +297,7 @@ app.put("/api/ingredients/:id", (req, res) => {
       categoria,
       scorta_minima: scorta_minima !== undefined ? Number(scorta_minima) : undefined
     });
+    await db.flush();
     res.json({ success: true, ingredient: updated });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -295,10 +305,11 @@ app.put("/api/ingredients/:id", (req, res) => {
 });
 
 // Delete a raw material / ingredient
-app.delete("/api/ingredients/:id", (req, res) => {
+app.delete("/api/ingredients/:id", async (req, res) => {
   try {
     const ingId = req.params.id;
     db.deleteIngrediente(ingId);
+    await db.flush();
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -306,7 +317,7 @@ app.delete("/api/ingredients/:id", (req, res) => {
 });
 
 // Update a supplier
-app.put("/api/suppliers/:id", (req, res) => {
+app.put("/api/suppliers/:id", async (req, res) => {
   try {
     const supplierId = req.params.id;
     const { ragione_sociale, p_iva, email, telefono, note } = req.body;
@@ -317,6 +328,7 @@ app.put("/api/suppliers/:id", (req, res) => {
       telefono,
       note
     });
+    await db.flush();
     res.json({ success: true, supplier: updated });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -324,10 +336,11 @@ app.put("/api/suppliers/:id", (req, res) => {
 });
 
 // Delete a supplier
-app.delete("/api/suppliers/:id", (req, res) => {
+app.delete("/api/suppliers/:id", async (req, res) => {
   try {
     const supplierId = req.params.id;
     db.deleteFornitore(supplierId);
+    await db.flush();
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -359,7 +372,7 @@ app.get("/api/recipes", (req, res) => {
   }
 });
 
-app.post("/api/recipes", (req, res) => {
+app.post("/api/recipes", async (req, res) => {
   try {
     const { nome_prodotto_finito, ingredienti } = req.body;
     if (!nome_prodotto_finito || !ingredienti || !Array.isArray(ingredienti)) {
@@ -372,13 +385,14 @@ app.post("/api/recipes", (req, res) => {
         quantita_richiesta: Number(i.quantita_richiesta)
       }))
     });
+    await db.flush();
     res.json(newRecipe);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.put("/api/recipes/:id", (req, res) => {
+app.put("/api/recipes/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { nome_prodotto_finito, ingredienti } = req.body;
@@ -392,16 +406,18 @@ app.put("/api/recipes/:id", (req, res) => {
         quantita_richiesta: Number(i.quantita_richiesta)
       }))
     });
+    await db.flush();
     res.json(updated);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.delete("/api/recipes/:id", (req, res) => {
+app.delete("/api/recipes/:id", async (req, res) => {
   try {
     const { id } = req.params;
     db.deleteRicetta(id);
+    await db.flush();
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -444,7 +460,7 @@ app.get("/api/discharges", (req, res) => {
 });
 
 // Record new production run
-app.post("/api/production", (req, res) => {
+app.post("/api/production", async (req, res) => {
   try {
     const { ricetta_id, quantita_prodotta, lotti_selezionati } = req.body;
     if (!ricetta_id || !quantita_prodotta || !lotti_selezionati || !Array.isArray(lotti_selezionati)) {
@@ -460,6 +476,7 @@ app.post("/api/production", (req, res) => {
       }))
     });
 
+    await db.flush();
     res.json({ success: true, ...result });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -467,11 +484,12 @@ app.post("/api/production", (req, res) => {
 });
 
 // Update an existing production discharge (only metadata like quantity and date)
-app.put("/api/discharges/:id", (req, res) => {
+app.put("/api/discharges/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const { quantita_prodotta, data } = req.body;
     const updated = db.updateScarico(id, { quantita_prodotta, data });
+    await db.flush();
     res.json(updated);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -479,10 +497,11 @@ app.put("/api/discharges/:id", (req, res) => {
 });
 
 // Delete a production discharge (and restore active ingredient lot stock)
-app.delete("/api/discharges/:id", (req, res) => {
+app.delete("/api/discharges/:id", async (req, res) => {
   try {
     const { id } = req.params;
     db.deleteScarico(id);
+    await db.flush();
     res.json({ success: true });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

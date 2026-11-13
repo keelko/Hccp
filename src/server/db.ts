@@ -52,6 +52,7 @@ class FileDatabase {
   private pool: any = null;
   private isCloudDb = false;
   private lastSavePromise: Promise<void> | null = null;
+  private lastSaveError: Error | null = null;
 
   constructor() {
     this.init();
@@ -60,6 +61,11 @@ class FileDatabase {
   async flush(): Promise<void> {
     if (this.lastSavePromise) {
       await this.lastSavePromise;
+      if (this.lastSaveError) {
+        const err = this.lastSaveError;
+        this.lastSaveError = null;
+        throw err;
+      }
     }
   }
 
@@ -113,6 +119,9 @@ class FileDatabase {
 
         this.pool = new Pool({
           connectionString: dbUrl,
+          max: 5,
+          idleTimeoutMillis: 10000,
+          connectionTimeoutMillis: 10000,
           ssl: dbUrl.includes("localhost") || dbUrl.includes("127.0.0.1") ? false : { rejectUnauthorized: false }
         });
         
@@ -225,11 +234,13 @@ Riesegui il deploy o riavvia il server su Render per applicare questa modifica, 
     this.cache = data;
     if (this.isCloudDb && this.pool) {
       // Salvataggio sul Database Postgres tracciato per ambienti serverless
+      this.lastSaveError = null;
       this.lastSavePromise = this.pool.query(
         "INSERT INTO app_state (key, value) VALUES ('haccp_db_state', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
         [JSON.stringify(data)]
       ).then(() => {}).catch((err: any) => {
         console.error("Errore nel salvataggio asincrono sul database Postgres:", err);
+        this.lastSaveError = err instanceof Error ? err : new Error(String(err));
       });
     } else {
       // Salvataggio sincrono locale su file
