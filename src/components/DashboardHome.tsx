@@ -751,7 +751,7 @@ export default function DashboardHome({
           <input
             type="text"
             className="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all shadow-xs font-bold"
-            placeholder="Cerca per numero lotto, fornitore o ingrediente..."
+            placeholder="Cerca numero lotto"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             id="global-search-input"
