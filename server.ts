@@ -206,7 +206,7 @@ app.get("/api/lots", (req, res) => {
 });
 
 // 5. Save Approved Document
-app.post("/api/documents/approve", (req, res) => {
+app.post("/api/documents/approve", async (req, res) => {
   try {
     const { ragione_sociale_fornitore, p_iva, numero_documento, data_documento, tipo, immagine_url, righe } = req.body;
     
@@ -224,6 +224,7 @@ app.post("/api/documents/approve", (req, res) => {
       righe
     });
 
+    await db.flush();
     res.json({ success: true, ...result });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -530,17 +531,19 @@ app.post("/api/scan", async (req, res) => {
       return res.status(400).json({ error: "Nessuna immagine fornita per la scansione." });
     }
 
-    // Save the image statically so we can review it side-by-side
+    // Save the image statically on persistent servers, or keep compressed Data URL on serverless (Vercel)
     const timestamp = Date.now();
     const filename = `${timestamp}_documento.png`;
-    const cleanBase64 = image.replace(/^data:image\/\w+;base64,/, "");
+    const cleanBase64 = image.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, "");
     
-    let imageUrl = image.startsWith("data:") ? image : `data:${mimeType || "image/png"};base64,${cleanBase64}`;
-    try {
-      fs.writeFileSync(path.join(uploadDir, filename), cleanBase64, { encoding: "base64" });
-      imageUrl = `/uploads/${filename}`;
-    } catch (fsErr) {
-      console.warn("Filesystem read-only (es. Vercel). Utilizzo immagine inline in memoria:", fsErr);
+    let imageUrl = image.startsWith("data:") ? image : `data:${mimeType || "image/jpeg"};base64,${cleanBase64}`;
+    if (!isServerless) {
+      try {
+        fs.writeFileSync(path.join(uploadDir, filename), cleanBase64, { encoding: "base64" });
+        imageUrl = `/uploads/${filename}`;
+      } catch (fsErr) {
+        console.warn("Filesystem non scrivibile. Utilizzo immagine inline Data URL:", fsErr);
+      }
     }
 
     let parsedData: any = null;

@@ -2577,11 +2577,12 @@ export default function DashboardHome({
                   {selectedDocDetails.immagine_url && (
                     <a
                       href={selectedDocDetails.immagine_url}
-                      target="_blank"
+                      target={selectedDocDetails.immagine_url.startsWith("data:") ? undefined : "_blank"}
                       rel="noopener noreferrer"
+                      download={selectedDocDetails.immagine_url.startsWith("data:") ? `documento_${selectedDocDetails.numero_documento || "scansione"}.jpg` : undefined}
                       className="absolute bottom-3 right-3 p-2 bg-slate-900/85 hover:bg-slate-900 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer backdrop-blur-xs opacity-0 group-hover:opacity-100 border border-slate-800"
                     >
-                      Apri in Nuova Scheda <ArrowRight size={12} />
+                      {selectedDocDetails.immagine_url.startsWith("data:") ? "Scarica Foto" : "Apri in Nuova Scheda"} <ArrowRight size={12} />
                     </a>
                   )}
                 </div>

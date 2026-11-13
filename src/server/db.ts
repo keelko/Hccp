@@ -51,9 +51,16 @@ class FileDatabase {
   private cache: DatabaseSchema | null = null;
   private pool: any = null;
   private isCloudDb = false;
+  private lastSavePromise: Promise<void> | null = null;
 
   constructor() {
     this.init();
+  }
+
+  async flush(): Promise<void> {
+    if (this.lastSavePromise) {
+      await this.lastSavePromise;
+    }
   }
 
   async initialize(): Promise<void> {
@@ -217,11 +224,11 @@ Riesegui il deploy o riavvia il server su Render per applicare questa modifica, 
   private save(data: DatabaseSchema) {
     this.cache = data;
     if (this.isCloudDb && this.pool) {
-      // Salvataggio asincrono in background sul Database Postgres
-      this.pool.query(
+      // Salvataggio sul Database Postgres tracciato per ambienti serverless
+      this.lastSavePromise = this.pool.query(
         "INSERT INTO app_state (key, value) VALUES ('haccp_db_state', $1) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value",
         [JSON.stringify(data)]
-      ).catch((err: any) => {
+      ).then(() => {}).catch((err: any) => {
         console.error("Errore nel salvataggio asincrono sul database Postgres:", err);
       });
     } else {
